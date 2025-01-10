@@ -83,6 +83,7 @@ fn loop_fn() {
         let mut uart2 = UART2.take().expect("Uart2 error in main");
         let data: &mut [u8; 100] = &mut [0; 100];
         let _ = uart2.read_bytes(data);
+        println!("Read bytes: {:?}", data);
         UART2 = Some(uart2);
     }
 }
