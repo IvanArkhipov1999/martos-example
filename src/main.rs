@@ -39,6 +39,7 @@ fn setup_fn() {
 /// Loop function for task to execute.
 fn loop_fn() {
     unsafe {
+        // Sending broadcast messages and receiving them
         let mut esp_now = ESP_NOW.take().expect("Esp-now error in main");
 
         let r = esp_now.receive();
@@ -77,6 +78,12 @@ fn loop_fn() {
 
         NEXT_SEND_TIME = Some(next_send_time);
         ESP_NOW = Some(esp_now);
+
+        // Reading bytes from uart2
+        let mut uart2 = UART2.take().expect("Uart2 error in main");
+        let data: &mut [u8; 100] = &mut [0; 100];
+        let _ = uart2.read_bytes(data);
+        UART2 = Some(uart2);
     }
 }
 
