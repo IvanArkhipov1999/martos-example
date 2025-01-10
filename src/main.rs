@@ -79,12 +79,28 @@ fn loop_fn() {
         NEXT_SEND_TIME = Some(next_send_time);
         ESP_NOW = Some(esp_now);
 
-        // Reading bytes from uart2
+        // Init buf
+        const BUFFER_SIZE: usize = 24;
+        let mut buf = [0u8; 2 * BUFFER_SIZE];
+        let buf2 = &mut [0u8; BUFFER_SIZE];
+        let i2: usize = buf2.len();
+
+        // Reading bytes from uart2 to buf2
         let mut uart2 = UART2.take().expect("Uart2 error in main");
-        let data: &mut [u8; 100] = &mut [0; 100];
-        let _ = uart2.read_bytes(data);
-        println!("Read bytes: {:?}", data);
+        let _ = uart2.read_bytes(buf2);
+        println!("Read bytes: {:?}", buf2);
         UART2 = Some(uart2);
+
+        // bytesToHex
+        let hex = "0123456789ABCDEF";
+        for i in 0..i2 {
+            let b = buf2[i];
+            buf[2 * i] = hex.as_bytes()[(b >> 4) as usize]; // Получаем старшую часть байта
+            buf[2 * i + 1] = hex.as_bytes()[(b & 0x0F) as usize]; // Получаем младшую часть байта
+        }
+        println!("bytesToHex result: {:?}", buf);
+        
+        // TODO: send buf to broadcast
     }
 }
 
