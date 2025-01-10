@@ -10,11 +10,11 @@ debug = true
 # Specifying Martos version
 #martos = "0.4.0"
 # Specifying current Martos version path for ci
-martos = { version = "0.4.0", features = ["network"] }
-esp-hal = "0.20.0"
+martos = { git = "https://github.com/IvanArkhipov1999/Martos.git", branch = "uart2-usage-fix", features = ["network"] }
+esp-hal = "0.21.1"
 esp-backtrace = { version = "0.14.1", features = ["esp32", "panic-handler", "exception-handler", "println"] }
 esp-println = { version = "0.11.0", features = ["esp32"] }
-esp-wifi = { version = "0.9.1", features = ["wifi", "esp-now"] }
+esp-wifi = { version = "0.10.1", features = ["wifi", "esp-now"] }
 
 [features]
 default = ["esp-hal/esp32", "esp-backtrace/esp32", "esp-println/esp32", "esp-wifi/esp32"]
