@@ -2,10 +2,12 @@
 #![no_main]
 
 use esp_backtrace as _;
+use esp_hal::uart::Uart;
+use esp_hal::Blocking;
 use esp_hal::{entry, time};
 use esp_println::println;
 use esp_wifi::esp_now::{EspNow, PeerInfo, BROADCAST_ADDRESS};
-use martos::get_esp_now;
+use martos::{get_esp_now, get_io, get_uart2};
 use martos::{
     init_system,
     task_manager::{TaskManager, TaskManagerTrait},
@@ -16,10 +18,19 @@ static mut ESP_NOW: Option<EspNow> = None;
 /// Variable for saving time to send broadcast message
 static mut NEXT_SEND_TIME: Option<u64> = None;
 
+// Uart for reading bytes
+static mut UART2: Option<Uart<'_, esp_hal::peripherals::UART2, Blocking>> = None;
+
 /// Setup function for task to execute.
 fn setup_fn() {
     println!("Setup hello world!");
+
     unsafe {
+        let uart2 = get_uart2();
+        let io = get_io();
+        let uart = Uart::new(uart2, io.pins.gpio1, io.pins.gpio2).unwrap();
+        UART2 = Some(uart);
+
         ESP_NOW = Some(get_esp_now());
         NEXT_SEND_TIME = Some(time::now().duration_since_epoch().to_millis() + 5 * 1000);
     }
