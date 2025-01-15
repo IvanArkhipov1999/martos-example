@@ -28,7 +28,7 @@ fn setup_fn() {
     unsafe {
         let uart2 = get_uart2();
         let io = get_io();
-        let uart = Uart::new(uart2, io.pins.gpio1, io.pins.gpio2).unwrap();
+        let uart = Uart::new(uart2, io.pins.gpio15, io.pins.gpio4).unwrap();
         UART2 = Some(uart);
 
         ESP_NOW = Some(get_esp_now());
@@ -79,18 +79,21 @@ fn loop_fn() {
         // NEXT_SEND_TIME = Some(next_send_time);
 
         // Init buf
+        println!("Init buf");
         const BUFFER_SIZE: usize = 24;
         let mut buf = [0u8; 2 * BUFFER_SIZE];
         let buf2 = &mut [0u8; BUFFER_SIZE];
         let i2: usize = buf2.len();
 
         // Reading bytes from uart2 to buf2
+        println!("Reading bytes from uart2 to buf2");
         let mut uart2 = UART2.take().expect("Uart2 error in main");
         let _ = uart2.read_bytes(buf2);
         println!("Read bytes: {:?}", buf2);
         UART2 = Some(uart2);
 
         // bytesToHex
+        println!("bytesToHex");
         let hex = "0123456789ABCDEF";
         for i in 0..i2 {
             let b = buf2[i];
@@ -100,7 +103,7 @@ fn loop_fn() {
         println!("bytesToHex result: {:?}", buf);
 
         // Send buf to broadcast
-        println!("Send");
+        println!("Send buf to broadcast");
         let mut esp_now = ESP_NOW.take().expect("Esp-now error in main");
         let status = esp_now.send(&BROADCAST_ADDRESS, &buf).unwrap().wait();
         println!("Send broadcast status: {:?}", status);
