@@ -98,14 +98,11 @@ fn loop_fn() {
             buf[2 * i + 1] = hex.as_bytes()[(b & 0x0F) as usize]; // Получаем младшую часть байта
         }
         println!("bytesToHex result: {:?}", buf);
-        
+
         // Send buf to broadcast
         println!("Send");
         let mut esp_now = ESP_NOW.take().expect("Esp-now error in main");
-        let status = esp_now
-            .send(&BROADCAST_ADDRESS, &buf)
-            .unwrap()
-            .wait();
+        let status = esp_now.send(&BROADCAST_ADDRESS, &buf).unwrap().wait();
         println!("Send broadcast status: {:?}", status);
 
         ESP_NOW = Some(esp_now);
