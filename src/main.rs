@@ -39,45 +39,44 @@ fn setup_fn() {
 /// Loop function for task to execute.
 fn loop_fn() {
     unsafe {
-        // Sending broadcast messages and receiving them
-        let mut esp_now = ESP_NOW.take().expect("Esp-now error in main");
+        // // Sending broadcast messages and receiving them
+        // let mut esp_now = ESP_NOW.take().expect("Esp-now error in main");
 
-        let r = esp_now.receive();
-        if let Some(r) = r {
-            println!("Received {:?}", r);
+        // let r = esp_now.receive();
+        // if let Some(r) = r {
+        //     println!("Received {:?}", r);
 
-            if r.info.dst_address == BROADCAST_ADDRESS {
-                if !esp_now.peer_exists(&r.info.src_address) {
-                    esp_now
-                        .add_peer(PeerInfo {
-                            peer_address: r.info.src_address,
-                            lmk: None,
-                            channel: None,
-                            encrypt: false,
-                        })
-                        .unwrap();
-                }
-                let status = esp_now
-                    .send(&r.info.src_address, b"Hello Peer")
-                    .unwrap()
-                    .wait();
-                println!("Send hello to peer status: {:?}", status);
-            }
-        }
+        //     if r.info.dst_address == BROADCAST_ADDRESS {
+        //         if !esp_now.peer_exists(&r.info.src_address) {
+        //             esp_now
+        //                 .add_peer(PeerInfo {
+        //                     peer_address: r.info.src_address,
+        //                     lmk: None,
+        //                     channel: None,
+        //                     encrypt: false,
+        //                 })
+        //                 .unwrap();
+        //         }
+        //         let status = esp_now
+        //             .send(&r.info.src_address, b"Hello Peer")
+        //             .unwrap()
+        //             .wait();
+        //         println!("Send hello to peer status: {:?}", status);
+        //     }
+        // }
 
-        let mut next_send_time = NEXT_SEND_TIME.take().expect("Next send time error in main");
-        if time::now().duration_since_epoch().to_millis() >= next_send_time {
-            next_send_time = time::now().duration_since_epoch().to_millis() + 5 * 1000;
-            println!("Send");
-            let status = esp_now
-                .send(&BROADCAST_ADDRESS, b"0123456789")
-                .unwrap()
-                .wait();
-            println!("Send broadcast status: {:?}", status)
-        }
+        // let mut next_send_time = NEXT_SEND_TIME.take().expect("Next send time error in main");
+        // if time::now().duration_since_epoch().to_millis() >= next_send_time {
+        //     next_send_time = time::now().duration_since_epoch().to_millis() + 5 * 1000;
+        //     println!("Send");
+        //     let status = esp_now
+        //         .send(&BROADCAST_ADDRESS, b"0123456789")
+        //         .unwrap()
+        //         .wait();
+        //     println!("Send broadcast status: {:?}", status)
+        // }
 
-        NEXT_SEND_TIME = Some(next_send_time);
-        ESP_NOW = Some(esp_now);
+        // NEXT_SEND_TIME = Some(next_send_time);
 
         // Init buf
         const BUFFER_SIZE: usize = 24;
@@ -100,7 +99,16 @@ fn loop_fn() {
         }
         println!("bytesToHex result: {:?}", buf);
         
-        // TODO: send buf to broadcast
+        // Send buf to broadcast
+        println!("Send");
+        let mut esp_now = ESP_NOW.take().expect("Esp-now error in main");
+        let status = esp_now
+            .send(&BROADCAST_ADDRESS, &buf)
+            .unwrap()
+            .wait();
+        println!("Send broadcast status: {:?}", status);
+
+        ESP_NOW = Some(esp_now);
     }
 }
 
