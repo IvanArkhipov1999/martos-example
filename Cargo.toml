@@ -10,7 +10,8 @@ debug = true
 # Specifying Martos version
 #martos = "0.4.0"
 # Specifying current Martos version path for ci
-martos = { git = "https://github.com/IvanArkhipov1999/Martos.git", branch = "uart2-usage-fix", features = ["network"] }
+# martos = { git = "https://github.com/IvanArkhipov1999/Martos.git", branch = "uart2-usage-fix", features = ["network"] }
+martos = { git = "https://github.com/IvanArkhipov1999/Martos.git", branch = "uart", features = ["network", "uart"] }
 esp-hal = "0.21.1"
 esp-backtrace = { version = "0.14.1", features = ["esp32", "panic-handler", "exception-handler", "println"] }
 esp-println = { version = "0.11.0", features = ["esp32"] }
